@@ -14,7 +14,7 @@ void setup() {
   textSize(boxSize * 0.5);
   selectInput("Select a Sudoku file:", "fileSelected");
 }
-
+//สร้างบอร์ด จากไฟล์ txt
 void fileSelected(File selection) {
   if (selection == null) {
     println("No file selected.");
@@ -141,3 +141,4 @@ void keyPressed(){
   if(key == 'A') player = 1;
   if(key == 'L') player = 2; 
 }
+
