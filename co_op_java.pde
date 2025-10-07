@@ -4,8 +4,10 @@ int[][] board = new int[9][9];
 int[][] ownerBoard = new int[9][9];
 int selR = -1, selC = -1;
 
+
 int player = 1;
 color[] colors = {color(0), color(0,150,255), color(0,200,100)};
+
 void setup() {
   size(500, 650);
   textAlign(CENTER, CENTER);
@@ -26,6 +28,7 @@ void setup() {
   for (int r = 0; r < 9; r++) {
     for (int c = 0; c < 9; c++) {
       board[r][c] = int(puzzle[r].charAt(c) - '0');
+      ownerBoard[r][c] = 0;
     }
   }
 }
@@ -36,6 +39,9 @@ void draw() {
   drawNumbers();
   drawSelected();
   drawButtons();
+  fill(0);
+  textSize(18);
+  text("Current Player: " + player + " (A=1 / L=2)", width/2, sizeBoard + 10);
 }
 
 void drawTable() {
@@ -48,11 +54,17 @@ void drawTable() {
 }
 
 void drawNumbers() {
-  fill(0);
+  textAlign(CENTER, CENTER);
+  textSize(boxSize * 0.5);
   for (int r = 0; r < 9; r++) {
     for (int c = 0; c < 9; c++) {
       int v = board[r][c];
       if (v != 0) {
+        if(ownerBoard[r][c] != 0){
+          fill(colors[ownerBoard[r][c]]);
+        } else {
+          fill(0);
+        }
         text(v, c * boxSize + boxSize / 2, r * boxSize + boxSize / 2);
       }
     }
@@ -62,7 +74,7 @@ void drawNumbers() {
 void drawSelected() {
   if (selR >= 0 && selC >= 0) {
     noFill();
-    stroke(0, 100, 200);
+    stroke(colors[player]);
     strokeWeight(3);
     rect(selC * boxSize, selR * boxSize, boxSize, boxSize);
   }
@@ -109,13 +121,13 @@ void checkButtons(int x, int y) {
   int btnSize = width / 10;
   int yy = sizeBoard + 30;
 
-
   for (int i = 1; i <= 9; i++) {
     int bx = (i - 1) % 5 * btnSize + 20;
     int by = yy + ((i - 1) / 5) * (btnSize + 10);
     if (x > bx && x < bx + btnSize && y > by - btnSize / 2 && y < by + btnSize / 2) {
       if (selR >= 0 && selC >= 0) {
         board[selR][selC] = i;
+        ownerBoard[selR][selC] = player;
       }
     }
   }
@@ -125,10 +137,12 @@ void checkButtons(int x, int y) {
   if (x > bx - btnSize / 2 && x < bx + btnSize / 2 && y > by - btnSize / 2 && y < by + btnSize / 2) {
     if (selR >= 0 && selC >= 0) {
       board[selR][selC] = 0;
+      ownerBoard[selR][selC] = 0;
     }
   }
 }
+
 void keyPressed(){
   if(key == 'A') player = 1;
-  if(key == 'L') player = 2;
+  if(key == 'L') player = 2; 
 }
