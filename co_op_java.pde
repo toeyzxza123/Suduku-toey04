@@ -141,8 +141,9 @@ void checkButtons(int x, int y) {
     }
   }
 }
-
+// สร้างให้เล่นแบบ co-op
 void keyPressed(){
   if(key == 'A') player = 1;
   if(key == 'L') player = 2; 
 }
+
