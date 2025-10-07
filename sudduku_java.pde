@@ -1,7 +1,10 @@
 int sizeBoard = 500;
 int boxSize = sizeBoard / 9;
 int[][] board = new int[9][9];
+int[][] ownerBoard = new int[9][9];
 int selR = -1, selC = -1;
+int player = 1;
+color[] colors = {color(0), color(0,150,255), color(0,200,100)};
 
 void setup() {
   size(500, 650);
@@ -125,3 +128,8 @@ void checkButtons(int x, int y) {
     }
   }
 }
+void keyPressed(){
+  if(key == 'A') player = 1;
+  if(key == 'L') player = 2;
+}
+
