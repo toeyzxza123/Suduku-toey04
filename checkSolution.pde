@@ -2,6 +2,8 @@ int sizeBoard = 500;
 int boxSize = sizeBoard / 9;
 int[][] board = new int[9][9];
 int[][] ownerBoard = new int[9][9];
+boolean[][] wrong = new boolean[9][9];
+int wrongCount = 0;
 int selR = -1, selC = -1;
 
 int player = 1;
@@ -12,9 +14,15 @@ void setup() {
     textAlign(CENTER, CENTER);
     textSize(boxSize * 0.5);
     selectInput("Select a Sudoku file:", "fileSelected");
+    // initialize wrong array (all false)
+    for (int r = 0; r < 9; r++) {
+        for (int c = 0; c < 9; c++) {
+            wrong[r][c] = false;
+        }
+    }
 }
 
-void fileSelected(File selection) {
+void handleFile(File selection) {
     if (selection == null) {
         println("No file selected.");
     } else {
@@ -25,6 +33,7 @@ void fileSelected(File selection) {
                 ownerBoard[r][c] = 0;
             }
         }
+        checkSolution(); // check right after loading
     }
 }
 
@@ -32,11 +41,19 @@ void draw() {
     background(255);
     drawTable();
     drawNumbers();
+    drawWrong();
     drawSelected();
     drawButtons();
     fill(0);
     textSize(18);
     text("Current Player: " + player + " (A=1 / L=2)", width/2, sizeBoard + 10);
+    if (wrongCount > 0) {
+        fill(255, 0, 0);
+        text("Errors: " + wrongCount, width/2, sizeBoard + 30);
+    } else {
+        fill(0, 150, 0);
+        text("No errors!", width/2, sizeBoard + 30);
+    }
 }
 
 void drawTable() {
@@ -55,7 +72,9 @@ void drawNumbers() {
         for (int c = 0; c < 9; c++) {
             int v = board[r][c];
             if (v != 0) {
-                if (ownerBoard[r][c] != 0) {
+                if (wrong[r][c]) {
+                    fill(255, 0, 0); // red for wrong
+                } else if (ownerBoard[r][c] != 0) {
                     fill(colors[ownerBoard[r][c]]);
                 } else {
                     fill(0);
@@ -123,6 +142,7 @@ void checkButtons(int x, int y) {
             if (selR >= 0 && selC >= 0) {
                 board[selR][selC] = i;
                 ownerBoard[selR][selC] = player;
+                checkSolution(); // immediate re-check after change
             }
         }
     }
@@ -133,6 +153,7 @@ void checkButtons(int x, int y) {
         if (selR >= 0 && selC >= 0) {
             board[selR][selC] = 0;
             ownerBoard[selR][selC] = 0;
+            checkSolution(); // re-check after erase
         }
     }
 }
@@ -143,28 +164,37 @@ void keyPressed() {
     if (keyCode == ENTER) checkSolution();
 }
 
-//ตรวจสอบว่าแถวไหนช่องไหนผิด
 void checkSolution() {
+    // reset wrong flags
+    for (int r = 0; r < 9; r++) {
+        for (int c = 0; c < 9; c++) {
+            wrong[r][c] = false;
+        }
+    }
+
+    // find duplicates and mark both cells involved
     for (int r = 0; r < 9; r++) {
         for (int c = 0; c < 9; c++) {
             int val = board[r][c];
             if (val == 0) continue;
 
-            // ตรวจสอบแถว (row)
+            // check row
             for (int i = 0; i < 9; i++) {
                 if (i != c && board[r][i] == val) {
-                    println("Duplicate in row " + (r + 1) + ", column " + (c + 1));
+                    wrong[r][c] = true;
+                    wrong[r][i] = true;
                 }
             }
 
-           // ตรวจคอลัมน์ (Column)
+            // check column
             for (int j = 0; j < 9; j++) {
                 if (j != r && board[j][c] == val) {
-                    println("Duplicate in column " + (c + 1) + ", row " + (r + 1));
+                    wrong[r][c] = true;
+                    wrong[j][c] = true;
                 }
             }
 
-              // ตรวจกรอบ 3x3
+            // check 3x3 box
             int startR = (r / 3) * 3;
             int startC = (c / 3) * 3;
             for (int i = 0; i < 3; i++) {
@@ -172,9 +202,38 @@ void checkSolution() {
                     int rr = startR + i;
                     int cc = startC + j;
                     if ((rr != r || cc != c) && board[rr][cc] == val) {
-                        println("Duplicate in 3x3 box at row " + (r + 1) + ", column " + (c + 1));
+                        wrong[r][c] = true;
+                        wrong[rr][cc] = true;
                     }
                 }
+            }
+        }
+    }
+
+    // count wrong cells
+    int count = 0;
+    for (int r = 0; r < 9; r++) {
+        for (int c = 0; c < 9; c++) {
+            if (wrong[r][c]) count++;
+        }
+    }
+    wrongCount = count;
+
+    if (wrongCount == 0) {
+        println("No duplicates found. Good job!");
+    } else {
+        println("Found " + wrongCount + " incorrect cell(s)!");
+    }
+}
+
+void drawWrong() {
+    noFill();
+    stroke(255, 0, 0);
+    strokeWeight(3);
+    for (int r = 0; r < 9; r++) {
+        for (int c = 0; c < 9; c++) {
+            if (wrong[r][c]) {
+                rect(c * boxSize, r * boxSize, boxSize, boxSize);
             }
         }
     }
