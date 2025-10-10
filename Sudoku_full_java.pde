@@ -72,7 +72,7 @@ void drawNumbers() {
             int v = board[r][c];
             if (v != 0) {
                 if (wrong[r][c]) {
-                    fill(255, 0, 0); // red for wrong
+                    fill(255, 0, 0);
                 } else if (ownerBoard[r][c] != 0) {
                     fill(colors[ownerBoard[r][c]]);
                 } else {
@@ -204,7 +204,6 @@ void checkSolution() {
         }
     }
 
-    // count wrong cells
     int count = 0;
     for (int r = 0; r < 9; r++) {
         for (int c = 0; c < 9; c++) {
@@ -232,5 +231,6 @@ void drawWrong() {
         }
     }
 }
+
 
 
