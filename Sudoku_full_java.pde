@@ -141,7 +141,7 @@ void checkButtons(int x, int y) {
             if (selR >= 0 && selC >= 0) {
                 board[selR][selC] = i;
                 ownerBoard[selR][selC] = player;
-                checkSolution(); // immediate re-check after change
+                checkSolution();
             }
         }
     }
@@ -232,4 +232,5 @@ void drawWrong() {
         }
     }
 }
+
 
