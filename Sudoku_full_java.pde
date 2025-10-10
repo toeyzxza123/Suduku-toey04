@@ -14,7 +14,6 @@ void setup() {
     textAlign(CENTER, CENTER);
     textSize(boxSize * 0.5);
     selectInput("Select a Sudoku file:", "fileSelected");
-    // initialize wrong array (all false)
     for (int r = 0; r < 9; r++) {
         for (int c = 0; c < 9; c++) {
             wrong[r][c] = false;
@@ -33,7 +32,7 @@ void fileSelected(File selection) {
                 ownerBoard[r][c] = 0;
             }
         }
-        checkSolution(); // check right after loading
+        checkSolution();
     }
 }
 
@@ -153,7 +152,7 @@ void checkButtons(int x, int y) {
         if (selR >= 0 && selC >= 0) {
             board[selR][selC] = 0;
             ownerBoard[selR][selC] = 0;
-            checkSolution(); // re-check after erase
+            checkSolution();
         }
     }
 }
@@ -165,20 +164,17 @@ void keyPressed() {
 }
 
 void checkSolution() {
-    // reset wrong flags
     for (int r = 0; r < 9; r++) {
         for (int c = 0; c < 9; c++) {
             wrong[r][c] = false;
         }
     }
 
-    // find duplicates and mark both cells involved
     for (int r = 0; r < 9; r++) {
         for (int c = 0; c < 9; c++) {
             int val = board[r][c];
             if (val == 0) continue;
 
-            // check row
             for (int i = 0; i < 9; i++) {
                 if (i != c && board[r][i] == val) {
                     wrong[r][c] = true;
@@ -186,7 +182,6 @@ void checkSolution() {
                 }
             }
 
-            // check column
             for (int j = 0; j < 9; j++) {
                 if (j != r && board[j][c] == val) {
                     wrong[r][c] = true;
@@ -194,7 +189,6 @@ void checkSolution() {
                 }
             }
 
-            // check 3x3 box
             int startR = (r / 3) * 3;
             int startC = (c / 3) * 3;
             for (int i = 0; i < 3; i++) {
@@ -238,3 +232,4 @@ void drawWrong() {
         }
     }
 }
+
